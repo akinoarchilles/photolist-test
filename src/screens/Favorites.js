@@ -63,7 +63,7 @@ export default class extends Component {
     render() {
         const { Photos } = this.state
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <FlatList
                     style={{ flex: 1}}
                     data={Photos}
@@ -88,7 +88,7 @@ const Card = ({item, onPress, onFavourite}) => {
                     <Text style={[styles.title, styles.item]}>{item.title}</Text>
                     <Text style={[styles.published, styles.item]}>{item.published}</Text>
                     <TouchableOpacity onPress={onFavourite} style={ styles.item }>
-                        <Image source={item.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible' }}></Image>
+                        <Image source={item.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible', padding: 3 }}></Image>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -11,7 +11,7 @@ export default class extends Component {
 		return {
 			topBar: {
 				title: {
-                    text: 'Flicker Photo App'
+                    text: 'Flickr Photo App'
                 },
                 rightButtons: [
                     {
@@ -49,6 +49,7 @@ export default class extends Component {
     }
 
     searchResult = (tag='', paging=false) => {
+        if(!paging) this.setState({ Photos: [] })
         this.setState({ isLoading: true })
         getApi(tag, (response) => {
             if(response) {
@@ -142,7 +143,7 @@ export default class extends Component {
     render() {
         const { isLoading, Photos, searchTag, refreshing } = this.state
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View style={styles.searchBox}>
                     <View style={styles.row}>
                         <View style={{ flex: 9 }}>
@@ -151,32 +152,40 @@ export default class extends Component {
                                 value={searchTag}
                                 onChangeText={(value) => this.setState({ searchTag: value })}
                                 onSubmitEditing={() => this.searchResult(searchTag)}
-                                placeholder={'Search by Tag'}/>
+                                placeholder={'Search by Tag'}
+                                placeholderTextColor={'grey'}
+                                style={{ color: 'black' }}/>
                         </View>
                         <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => this.searchResult(searchTag)}>
-                            <Image source={require('../assets/search.png')} style={{ width: 20, height: 20, resizeMode: 'cover' }}/>
+                            <Image source={require('../assets/search.png')} style={{ width: 20, height: 20, resizeMode: 'cover', padding: 3 }}/>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{ flex: 1, justifyContent: 'center'}}>
-                    <FlatList
-                        style={{ flex: 1 }}
-                        data={Photos}
-                        renderItem={this.renderItem}
-                        keyExtractor={item => item.link + Math.random(0,99999999)}
-                        refreshControl={
-                            <RefreshControl
-                                progressViewOffset={30}
-                                refreshing={refreshing}
-                                onRefresh={() => this.onRefresh()}
-                            />
-                        }
-                        ListFooterComponent={isLoading ? <ActivityIndicator size={'large'} color="lightblue"/> : <Text style={{ textAlign: 'center' }}>Showing {Photos.length} items</Text>}
-                        onEndReached={this.onEndReached}
-                        onEndReachedThreshold={.9}
-                        contentContainerStyle={{ flexGrow: 1 }}
-                        ListEmptyComponent={!Photos.length <= 0 && isLoading ? this.emptyPhoto() : null}
-                        showsVerticalScrollIndicator={false}/>
+                    {
+                        isLoading && Photos.length <= 0 ? (
+                            <ActivityIndicator size={'large'} color="lightblue"/>
+                        ) : (
+                            <FlatList
+                                style={{ flex: 1 }}
+                                data={Photos}
+                                renderItem={this.renderItem}
+                                keyExtractor={item => item.link + Math.random(0,99999999)}
+                                refreshControl={
+                                    <RefreshControl
+                                        progressViewOffset={30}
+                                        refreshing={refreshing}
+                                        onRefresh={() => this.onRefresh()}
+                                    />
+                                }
+                                ListFooterComponent={isLoading && Photos.length > 0 ? <ActivityIndicator size={'large'} color="lightblue"/> : <Text style={{ textAlign: 'center' }}>Showing {Photos.length} items</Text>}
+                                onEndReached={this.onEndReached}
+                                onEndReachedThreshold={.9}
+                                contentContainerStyle={{ flexGrow: 1 }}
+                                ListEmptyComponent={!Photos.length <= 0 && isLoading ? this.emptyPhoto() : null}
+                                showsVerticalScrollIndicator={false}/>
+                        )
+                    }
                 </View>
             </View>
         )

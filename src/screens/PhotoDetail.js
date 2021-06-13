@@ -42,7 +42,7 @@ export default class extends Component {
     render() {
         const { Photo } = this.state
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <Image source={{ uri: Photo.media.m }} style={{ width: '100%', height: 300, resizeMode: 'cover' }} />
                 <View style={styles.cardBody}>
                     <Text style={styles.author}>{Photo.author}</Text>
@@ -50,7 +50,7 @@ export default class extends Component {
                     <Text style={[styles.published, styles.item]}>{Photo.published}</Text>
                     <Text style={[styles.link, styles.item]} onPress={() => this.webView()}>View this photo on Flickr</Text>
                     <TouchableOpacity onPress={() => this.onFavourite() } style={styles.item}>
-                        <Image source={Photo.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible' }}></Image>
+                        <Image source={Photo.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible', padding: 3 }}></Image>
                     </TouchableOpacity>
                 </View>
             </View>
