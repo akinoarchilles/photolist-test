@@ -19,7 +19,10 @@ export default class extends Component {
                         icon: require('../assets/love_red.png'),
                         color: 'red'
                     }
-                ]
+                ],
+                backButton: {
+                    visible: false
+                }
 			}
 		}
 	}
@@ -150,7 +153,7 @@ export default class extends Component {
                                 onSubmitEditing={() => this.searchResult(searchTag)}
                                 placeholder={'Search by Tag'}/>
                         </View>
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }} onPress={() => this.searchResult(searchTag)}>
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }} onPress={() => this.searchResult(searchTag)}>
                             <Image source={require('../assets/search.png')} style={{ width: 20, height: 20, resizeMode: 'cover' }}/>
                         </TouchableOpacity>
                     </View>
@@ -168,7 +171,7 @@ export default class extends Component {
                                 onRefresh={() => this.onRefresh()}
                             />
                         }
-                        ListFooterComponent={isLoading ? <ActivityIndicator size={'large'}/> : null}
+                        ListFooterComponent={isLoading ? <ActivityIndicator size={'large'} color="lightblue"/> : <Text style={{ textAlign: 'center' }}>Showing {Photos.length} items</Text>}
                         onEndReached={this.onEndReached}
                         onEndReachedThreshold={.9}
                         contentContainerStyle={{ flexGrow: 1 }}
@@ -231,11 +234,13 @@ const styles = StyleSheet.create({
     },
     searchBox: {
         backgroundColor: 'lightgrey',
-        padding: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         margin: 10
     },
     row: {
         flexDirection: 'row',
-        overflow: 'visible'
+        overflow: 'visible',
+        justifyContent: 'center'
     }
 })
