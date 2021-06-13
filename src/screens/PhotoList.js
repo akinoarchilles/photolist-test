@@ -4,6 +4,7 @@ import { Navigation } from "react-native-navigation";
 import { getApi } from "../api";
 import { pushScreen } from "../navigation";
 import moment from 'moment';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default class extends Component {
     static options() {
@@ -38,7 +39,9 @@ export default class extends Component {
 
     navigationButtonPressed({buttonId}) {
         if(buttonId === 'fav') {
-            pushScreen(this.props.componentId, 'Favorites')
+            pushScreen(this.props.componentId, 'Favorites', {
+                onFavourite: this.onFavourite
+            })
         }
     }
 
@@ -87,17 +90,44 @@ export default class extends Component {
         )
     }
 
+    onFavourite = (item) => {
+        let { Photos } = this.state
+        var idx = Photos.findIndex(e => e.link == item.link)
+        if(idx > -1) { //found
+            Photos[idx].isFavourite = !Photos[idx].isFavourite
+        }
+        this.setState({ Photos }, () => {
+            const { Photos } = this.state
+            AsyncStorage.getItem('Favorites', (_, Favorites) => {
+                if(Favorites) {
+                    Favorites = JSON.parse(Favorites)
+                    if(item.isFavourite) Favorites.push(item)
+                    else{
+                        let index = Favorites.findIndex(e => e.link == item.link)
+                        if(index > -1) { //found
+                            Favorites.splice(index,1)
+                        }
+                    }
+                    AsyncStorage.setItem('Favorites', JSON.stringify(Favorites))
+                }
+                else {
+                    Favorites = []
+                    Favorites.push(item)
+                    AsyncStorage.setItem('Favorites', JSON.stringify(Favorites))
+                }
+            })
+        })
+    }
+
     renderItem = ({item, index}) => {
         let onItemPress = () => {
             pushScreen(this.props.componentId, 'PhotoDetail', {
-                Photo: item
+                Photo: item,
+                onFavourite: this.onFavourite
             })
         }
-        let onFavourite = () => {
-
-        }
         return (
-            <Card key={index} item={item} onPress={onItemPress} onFavourite={onFavourite}/>
+            <Card key={index} item={item} onPress={onItemPress} onFavourite={() => this.onFavourite(item)}/>
         )
     }
 
@@ -159,7 +189,7 @@ const Card = ({item, onPress, onFavourite}) => {
                     <Text style={styles.author}>{item.author}</Text>
                     <Text style={[styles.title, styles.item]}>{item.title}</Text>
                     <Text style={[styles.published, styles.item]}>{item.published}</Text>
-                    <TouchableOpacity onPress={() => { onFavourite }} style={ styles.item }>
+                    <TouchableOpacity onPress={onFavourite} style={ styles.item }>
                         <Image source={item.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible' }}></Image>
                     </TouchableOpacity>
                 </View>

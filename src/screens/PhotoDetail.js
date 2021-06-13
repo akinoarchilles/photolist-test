@@ -32,6 +32,13 @@ export default class extends Component {
         })
     }
 
+    onFavourite = () => {
+        const { onFavourite } = this.props
+        let { Photo } = this.state
+        this.setState({ Photo })
+        onFavourite && onFavourite(Photo)
+    }
+
     render() {
         const { Photo } = this.state
         return (
@@ -42,7 +49,7 @@ export default class extends Component {
                     <Text style={[styles.title, styles.item]}>{Photo.title}</Text>
                     <Text style={[styles.published, styles.item]}>{Photo.published}</Text>
                     <Text style={[styles.link, styles.item]} onPress={() => this.webView()}>View this photo on Flickr</Text>
-                    <TouchableOpacity onPress={() => { onFavourite }} style={styles.item}>
+                    <TouchableOpacity onPress={() => this.onFavourite() } style={styles.item}>
                         <Image source={Photo.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible' }}></Image>
                     </TouchableOpacity>
                 </View>
