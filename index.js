@@ -2,10 +2,12 @@ import { Navigation } from "react-native-navigation";
 import Favorites from "./src/screens/Favorites";
 import PhotoDetail from "./src/screens/PhotoDetail";
 import Photolist from './src/screens/PhotoList';
+import Webview from "./src/screens/Webview";
 
 Navigation.registerComponent('PhotoList', () => Photolist);
 Navigation.registerComponent('Favorites', () => Favorites);
 Navigation.registerComponent('PhotoDetail', () => PhotoDetail);
+Navigation.registerComponent('Webview', () => Webview);
 
 Navigation.events().registerAppLaunchedListener(() => {
   Navigation.setDefaultOptions({

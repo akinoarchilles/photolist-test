@@ -42,7 +42,7 @@ export default class extends Component {
         }
     }
 
-    searchResult = (tag='') => {
+    searchResult = (tag='', paging=false) => {
         this.setState({ isLoading: true })
         getApi(tag, (response) => {
             if(response) {
@@ -53,8 +53,12 @@ export default class extends Component {
                     e.published = moment(e.published).format('DD MMMM YYYY HH:mm')
                     return e
                 })
-    
-                this.setState({ Photos: response, oldSearchTag: tag })
+                if(paging) {
+                    let statePhotos = this.state.Photos
+                    Array.prototype.push.apply(statePhotos, Photos)
+                    Photos = statePhotos
+                }
+                this.setState({ Photos: Photos, oldSearchTag: tag })
             }
             this.setState({ isLoading: false, oldSearchTag: tag })
         })
@@ -89,9 +93,17 @@ export default class extends Component {
                 Photo: item
             })
         }
+        let onFavourite = () => {
+
+        }
         return (
-            <Card key={index} item={item} onPress={onItemPress}/>
+            <Card key={index} item={item} onPress={onItemPress} onFavourite={onFavourite}/>
         )
+    }
+
+    onEndReached = ({ distanceFromEnd }) => {
+        if(distanceFromEnd < 100) return
+        this.searchResult('', true)
     }
 
     render() {
@@ -114,34 +126,31 @@ export default class extends Component {
                     </View>
                 </View>
                 <View style={{ flex: 1, justifyContent: 'center'}}>
-                    {
-                        isLoading ? (
-                            <ActivityIndicator size={'large'}/>
-                        ) : (
-                            <FlatList
-                                style={{ flex: 1 }}
-                                data={Photos.items}
-                                renderItem={this.renderItem}
-                                keyExtractor={item => item.link}
-                                refreshControl={
-                                    <RefreshControl
-                                        progressViewOffset={30}
-                                        refreshing={refreshing}
-                                        onRefresh={() => this.onRefresh()}
-                                    />
-                                }
-                                contentContainerStyle={{ flexGrow: 1 }}
-                                ListEmptyComponent={this.emptyPhoto()}
-                                showsVerticalScrollIndicator={false}/>
-                        )
-                    }
+                    <FlatList
+                        style={{ flex: 1 }}
+                        data={Photos}
+                        renderItem={this.renderItem}
+                        keyExtractor={item => item.link + Math.random(0,99999999)}
+                        refreshControl={
+                            <RefreshControl
+                                progressViewOffset={30}
+                                refreshing={refreshing}
+                                onRefresh={() => this.onRefresh()}
+                            />
+                        }
+                        ListFooterComponent={isLoading ? <ActivityIndicator size={'large'}/> : null}
+                        onEndReached={this.onEndReached}
+                        onEndReachedThreshold={.9}
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        ListEmptyComponent={!Photos.length <= 0 && isLoading ? this.emptyPhoto() : null}
+                        showsVerticalScrollIndicator={false}/>
                 </View>
             </View>
         )
     }
 }
 
-const Card = ({item, onPress}) => {
+const Card = ({item, onPress, onFavourite}) => {
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={styles.card}>
@@ -150,6 +159,9 @@ const Card = ({item, onPress}) => {
                     <Text style={styles.author}>{item.author}</Text>
                     <Text style={[styles.title, styles.item]}>{item.title}</Text>
                     <Text style={[styles.published, styles.item]}>{item.published}</Text>
+                    <TouchableOpacity onPress={() => { onFavourite }} style={ styles.item }>
+                        <Image source={item.isFavourite ? require('../assets/love_red.png') : require('../assets/love_grey.png')} style={{ width: 20, height: 20, resizeMode: 'cover', overflow: 'visible' }}></Image>
+                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
@@ -177,7 +189,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     item: {
-        marginVertical: 2,
+        marginVertical: 4,
     },
     title: {
         fontSize: 13,
