@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TouchableOpacity, FlatList, View, Image, Text, RefreshControl, Button, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, FlatList, View, Image, Text, RefreshControl, Button, StyleSheet, TextInput, ActivityIndicator, Platform } from 'react-native';
 import { Navigation } from "react-native-navigation";
 import { getApi } from "../api";
 import { pushScreen } from "../navigation";
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     searchBox: {
         backgroundColor: 'lightgrey',
         paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingVertical: Platform.OS === 'ios' ? 10 : 5,
         margin: 10
     },
     row: {
